@@ -5,9 +5,8 @@ from django.contrib.auth.models import User
 
 class Movies(models.Model):
 
-    movie_name = models.CharField(max_length=50)
-    poster_link = models.CharField(
-        max_length=1000, default='Image')
+    movie_name = models.CharField(max_length=500)
+    poster_link = models.CharField(max_length=200)
     date = models.CharField(max_length=100)
     screen = models.CharField(max_length=20)
     Rate = models.CharField(max_length=20)
