@@ -7,7 +7,7 @@ class Movies(models.Model):
 
     movie_name = models.CharField(max_length=50)
     poster_link = models.CharField(
-        max_length=100, default='https://xl.movieposterdb.com/19_12/2017/3890160/xl_3890160_081e65b0.jpg')
+        max_length=1000, default='https://xl.movieposterdb.com/19_12/2017/3890160/xl_3890160_081e65b0.jpg')
     date = models.CharField(max_length=50)
     screen = models.CharField(max_length=20)
     Rate = models.CharField(max_length=20)
