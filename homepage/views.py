@@ -79,14 +79,14 @@ def book(request):
 
     if request.user.is_authenticated:
         movie = request.POST.get('key')
-        print(movie)
+        # print(movie)
         movie_selected = Movies.objects.filter(
             movie_name=movie)
         # print(movie_selected)
         current_user = request.user
         wallet = Userdetails.objects.filter(
             user=current_user.id).values('Wallet')
-        return render(request, './frontend/book.html', {'movies': movie_selected[0], 'wallet': wallet[0]})
+        return render(request, './frontend/book.html', {'columns': range(1, 8), 'rows': range(7), 'movies': movie_selected[0], 'wallet': wallet[0]})
 
     return render(request, './frontend/login.html')
 
@@ -120,58 +120,61 @@ def price(request):
 def price_post(request):
 
     if request.user.is_authenticated:
-        movie = request.POST.get('key')
-        movie_id = request.POST.get('movie_id')
-        tickets = request.POST.get('tickets')
-        total = request.POST.get('total')
-        movie_select = Movies.objects.filter(
-            movie_name=movie)
-        current_user = request.user
-        wallet = Userdetails.objects.filter(
-            user=current_user.id).values('Wallet')
+        if request.method == "POST":
+            movie = request.POST.get('key')
+            movie_id = request.POST.get('movie_id')
+            tickets = request.POST.get('tickets')
+            total = request.POST.get('total')
+            movie_select = Movies.objects.filter(
+                movie_name=movie)
+            current_user = request.user
+            wallet = Userdetails.objects.filter(
+                user=current_user.id).values('Wallet')
 
-        movie_rate = Movies.objects.filter(
-            movie_name=movie).values('Rate')
+            movie_rate = Movies.objects.filter(
+                movie_name=movie).values('Rate')
 
-        tickets = str(int(total) // int(movie_rate[0]['Rate']))
+            tickets = str(int(total) // int(movie_rate[0]['Rate']))
 
-        user = User.objects.get(id=current_user.id)
-        movies = Movies.objects.get(id=movie_id)
+            user = User.objects.get(id=current_user.id)
+            movies = Movies.objects.get(id=movie_id)
 
-        mymovies = Mymovies(user=user,
-                            movies=movies, tickets=tickets)
+            mymovies = Mymovies(user=user,
+                                movies=movies, tickets=tickets)
 
-        mymovies.save()
+            mymovies.save()
 
-        Change = Userdetails.objects.filter(
-            user=current_user.id)
+            Change = Userdetails.objects.filter(
+                user=current_user.id)
 
-        if not Change:
-            messages.error(request, "Login to Continue!")
-            return redirect('frontend.index')
+            if not Change:
+                messages.error(request, "Login to Continue!")
+                return redirect('frontend.index')
 
+            else:
+                Change = Change.get()
+
+            Remaining = str(int(wallet[0]['Wallet'])-int(total))
+
+            # print(Remaining)
+
+            send_mail(
+                'Booking Confirmed',
+                "Movie : " + movies.movie_name + "\nDate : " +
+                movies.date + "\nScreenNo : " + movies.screen +
+                "\nRemainingAmount : " + Remaining,
+                'bookmovietickets123@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+            Change.Wallet = Remaining
+
+            Change.save()
+
+            return render(request, './frontend/success.html', {'remaining': Remaining, 'movies': movie_select[0], 'wallet': wallet[0]})
         else:
-            Change = Change.get()
-
-        Remaining = str(int(wallet[0]['Wallet'])-int(total))
-
-        print(Remaining)
-
-        send_mail(
-            'Booking Confirmed',
-            "Movie : " + movies.movie_name + "\nDate : " +
-            movies.date + "\nScreenNo : " + movies.screen +
-            "\nRemainingAmount : " + Remaining,
-            'bookmovietickets123@gmail.com',
-            [user.email],
-            fail_silently=False,
-        )
-
-        Change.Wallet = Remaining
-
-        Change.save()
-
-        return render(request, './frontend/success.html', {'remaining': Remaining, 'movies': movie_select[0], 'wallet': wallet[0]})
+            return redirect('frontend.index')
 
     return render(request, './frontend/login.html')
 
@@ -181,8 +184,8 @@ def mymovies(request):
     if request.user.is_authenticated:
         current_user = request.user
         movies = Mymovies.objects.filter(user_id=current_user.id)
-        for i in movies:
-            print(i.movies.date)
+        # for i in movies:
+        #     print(i.movies.date)
         wallet = Userdetails.objects.filter(
             user=current_user.id).values('Wallet')
         return render(request, './frontend/mymovies.html', {'movies': movies, 'wallet': wallet[0]})

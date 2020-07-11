@@ -22,7 +22,7 @@ class Userdetails(models.Model):
     phone = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.Wallet
+        return self.user.username
 
 
 class Mymovies(models.Model):
@@ -32,4 +32,4 @@ class Mymovies(models.Model):
     tickets = models.CharField(max_length=20)
 
     def __str__(self):
-        return self.movies.movie_name
+        return self.user.username
