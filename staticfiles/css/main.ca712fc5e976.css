@@ -77,8 +77,6 @@ a:hover {
 }
 
 .card-img {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
   background-position: 100% 100%;
 }
 .logo {
@@ -175,7 +173,7 @@ a:hover {
   font-size: 11px;
 }
 
-/* @media screen and (max-width: 500px) {
+@media screen and (max-width: 500px) {
   .movie-card {
     width: 95%;
     max-width: 95%;
@@ -187,4 +185,4 @@ a:hover {
     padding: 0;
     margin: 0;
   }
-} */
+}
